@@ -1,0 +1,25 @@
+{
+    "config": {
+        "iothub_connection_string": {
+            "help": "Azure IoT Hub connection string",
+            "value": "\"HostName=HomeBase.azure-devices.net;DeviceId=STM32;SharedAccessKey=kunvhcn4Az6LooDZWxhVW+MaQXhsOSthhE3f9QFnQYY=\""
+        },
+        "iothub_client_trace": {
+            "help": "Enable IoT Hub Client tracing",
+            "value": false
+        }
+    },
+    "target_overrides": {
+        "*": {
+            "platform.stdio-convert-newlines": true,
+            "platform.stdio-baud-rate": 115200
+        },
+        "DISCO_L475VG_IOT01A": {
+            "target.components_add": ["wifi_ism43362"],
+            "target.network-default-interface-type": "WIFI",
+            "nsapi.default-wifi-security": "WPA_WPA2",
+            "nsapi.default-wifi-ssid": "\"Nokia 8\"",
+            "nsapi.default-wifi-password": "\"Dr.Mario!6\""
+        }
+    }
+}
