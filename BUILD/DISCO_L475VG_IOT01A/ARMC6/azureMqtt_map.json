@@ -2,7 +2,7 @@
     {
         "module": "[lib]\\c_w.l",
         "size": {
-            ".text": 15424,
+            ".text": 19879,
             ".data": 20,
             ".bss": 688,
             ".text-delta": 0,
@@ -13,7 +13,7 @@
     {
         "module": "[lib]\\fz_wm.l",
         "size": {
-            ".text": 3766,
+            ".text": 4000,
             ".data": 0,
             ".bss": 0,
             ".text-delta": 0,
@@ -79,12 +79,12 @@
     {
         "module": "main.o",
         "size": {
-            ".text": 3015,
+            ".text": 4241,
             ".data": 0,
-            ".bss": 5,
-            ".text-delta": 0,
+            ".bss": 214,
+            ".text-delta": 112,
             ".data-delta": 0,
-            ".bss-delta": 0
+            ".bss-delta": 2
         }
     },
     {
@@ -112,7 +112,7 @@
     {
         "module": "mbed-client-for-azure\\mbed",
         "size": {
-            ".text": 3797,
+            ".text": 3685,
             ".data": 20,
             ".bss": 397,
             ".text-delta": 0,
@@ -145,9 +145,9 @@
     {
         "module": "mbed-os\\drivers",
         "size": {
-            ".text": 2846,
+            ".text": 3062,
             ".data": 0,
-            ".bss": 928,
+            ".bss": 968,
             ".text-delta": 0,
             ".data-delta": 0,
             ".bss-delta": 0
@@ -178,7 +178,7 @@
     {
         "module": "mbed-os\\hal",
         "size": {
-            ".text": 2316,
+            ".text": 2318,
             ".data": 8,
             ".bss": 130,
             ".text-delta": 0,
@@ -189,7 +189,7 @@
     {
         "module": "mbed-os\\platform",
         "size": {
-            ".text": 10916,
+            ".text": 8888,
             ".data": 80,
             ".bss": 393,
             ".text-delta": 0,
@@ -222,7 +222,7 @@
     {
         "module": "mbed-os\\targets",
         "size": {
-            ".text": 21097,
+            ".text": 24923,
             ".data": 8,
             ".bss": 1586,
             ".text-delta": 0,
@@ -243,10 +243,10 @@
     },
     {
         "summary": {
-            "static_ram": 18118,
-            "static_ram_delta": 0,
-            "total_flash": 402015,
-            "total_flash_delta": 0
+            "static_ram": 18367,
+            "static_ram_delta": 2,
+            "total_flash": 409834,
+            "total_flash_delta": 112
         }
     }
 ]
