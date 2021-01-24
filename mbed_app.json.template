@@ -1,4 +1,3 @@
-  
 {
     "config": {
         "iothub_connection_string": {
@@ -13,7 +12,8 @@
     "target_overrides": {
         "*": {
             "platform.stdio-convert-newlines": true,
-            "platform.stdio-baud-rate": 115200
+            "platform.stdio-baud-rate": 115200,
+            "target.printf_lib": "std"
         },
         "DISCO_L475VG_IOT01A": {
             "target.components_add": ["wifi_ism43362"],
