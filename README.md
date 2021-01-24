@@ -1,3 +1,6 @@
+#Adapted offical ARM Azure IoT exampel
+The file mbed_app.json was not included, but the template for it was left in the project directory for anyone to adapt.
+
 ![](./resources/official_armmbed_example_badge.png)
 
 # Azure IoT Hub example for Mbed OS
