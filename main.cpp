@@ -21,7 +21,7 @@
 #include <cctype>
 
 #define BLINKING_RATE     100ms
-#define TELEMETRY_RATE    2s
+#define TELEMETRY_RATE    3s
 
 /**
  * This example sends and receives messages to and from Azure IoT Hub.
@@ -32,16 +32,17 @@
 NetworkInterface *_defaultSystemNetwork;
 
 //Function declarations
-bool initAzureMqtt(IOTHUB_DEVICE_CLIENT_HANDLE client_handle);
-void cleanup(IOTHUB_DEVICE_CLIENT_HANDLE client_handle);
-void sendDustTelemetry(IOTHUB_DEVICE_CLIENT_HANDLE client_handle);
-void handleButtonRise();
+bool initAzureMqtt(IOTHUB_DEVICE_CLIENT_HANDLE client_handle); // MQTT init and callbacks
+void cleanup(IOTHUB_DEVICE_CLIENT_HANDLE client_handle); //Cleanup after problems
+void sendDustTelemetry(IOTHUB_DEVICE_CLIENT_HANDLE client_handle); // Handles reading the dust sensor
+void handleButtonRise(); // Button press handler
 
 static bool isPeriodicSend = true; //sending data in an interval of TELEMETRY_RATE
 static bool buttonPressed = false;
 static bool message_received = false;
-GP2Y1010AU0F dust(LED1, PC_5, PD_14);
+GP2Y1010AU0F dust(LED1, PC_5, PD_14); // Dustsensor driver init
 
+//Connection status callback
 static void on_connection_status(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void* user_context)
 {
     if (result == IOTHUB_CLIENT_CONNECTION_AUTHENTICATED) {
@@ -51,7 +52,7 @@ static void on_connection_status(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_
     }
 }
 
-//Handles recieved async messages
+//Handles recieved async messages from cloud  to device messages
 static IOTHUBMESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDLE message, void* user_context)
 {
     LogInfo("Message received from IoT Hub");
@@ -59,11 +60,13 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDL
     const unsigned char *data_ptr;
     size_t len;
     const char* data_ptr2;
-    int blinkCount = 0;
+    int blinkCount = 0; //reset blinking count
 
+    /* Blinking via command: key: "blink", value: int */
     data_ptr2 = IoTHubMessage_GetProperty(message,"blink");
     DigitalOut led(LED1);
     blinkCount = atoi(data_ptr2);
+    //Blink for the read amount read from the property
     if(blinkCount > 0){
         LogInfo("Started to blink %d times", blinkCount);
         for(int i = 0; i < blinkCount; i++){
@@ -71,9 +74,10 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDL
             ThisThread::sleep_for(BLINKING_RATE);
         }
         LogInfo("Blinking Ended");
+        LogInfo("Message Property blink:%s ",data_ptr2);
     }
-    LogInfo("Message Property blink:%s ",data_ptr2);
-
+    
+    /* Switches between interval telemetry submission and manually via: key. "interval", value : true/false */
     data_ptr2 = IoTHubMessage_GetProperty(message,"interval");
     LogInfo("Message Property interval:%s ",data_ptr2);
     if(strcmp(data_ptr2, "true") == 0){
@@ -82,7 +86,7 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDL
         isPeriodicSend = false;
     }
 
-    //Message Body
+    /* Read Message Body, not used by the device, but is printed */
     if (IoTHubMessage_GetByteArray(message, &data_ptr, &len) != IOTHUB_MESSAGE_OK) {
         LogError("Failed to extract message data, please try again on IoT Hub");
         return IOTHUBMESSAGE_ABANDONED;
@@ -93,6 +97,7 @@ static IOTHUBMESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDL
     return IOTHUBMESSAGE_ACCEPTED;
 }
 
+/* Message sending callback*/
 static void on_message_sent(IOTHUB_CLIENT_CONFIRMATION_RESULT result, void* userContextCallback)
 {
     if (result == IOTHUB_CLIENT_CONFIRMATION_OK) {
@@ -121,6 +126,7 @@ int main() {
         return -1;
     }
 
+    //Establish Network connectifity
     int ret = _defaultSystemNetwork->connect();
     if (ret != 0) {
         LogError("Connection error: %d", ret);
@@ -144,9 +150,6 @@ int main() {
     time_t rtc_timestamp = rtc_read(); // verify it's been successfully updated
     LogInfo("RTC reports %s", ctime(&rtc_timestamp));  
     
-
-    LogInfo("Starting the Demo");
-    
     //MQTT Specific connections
     //Interrupt handler for button message sending, if interval is disabled
     InterruptIn btn1(BUTTON1);
@@ -158,24 +161,17 @@ int main() {
         MQTT_Protocol
     );
 
-    
     if(!initAzureMqtt(client_handle)){
         printf("MQTT init failed, please restart.");
         return -1;
     }
-
-
-    // Send two message to the cloud (one per second)
-    // or until we receive a message from the cloud
-    
-
-
 
     while (true) {
          if (isPeriodicSend) {
             sendDustTelemetry(client_handle);
             ThisThread::sleep_for(TELEMETRY_RATE);
             dust.printAverageDensity();
+            dust.printLastMeasurement();
          }else{
              if(buttonPressed){
                 buttonPressed = false;
@@ -184,15 +180,14 @@ int main() {
                 dust.printAverageDensity();
              }
          }
-        
-        
     }
-
     return 0;
 }
 
+/*
+Initialize the callback handler for MQTT and establish the connection
+*/
 bool initAzureMqtt(IOTHUB_DEVICE_CLIENT_HANDLE client_handle) {
-    //static const char connection_string[] = MBED_CONF_APP_IOTHUB_CONNECTION_STRING;
     bool trace_on = MBED_CONF_APP_IOTHUB_CLIENT_TRACE;
     tickcounter_ms_t interval = 100;
     IOTHUB_CLIENT_RESULT res;
@@ -200,10 +195,7 @@ bool initAzureMqtt(IOTHUB_DEVICE_CLIENT_HANDLE client_handle) {
     LogInfo("Initializing IoT Hub client");
     IoTHub_Init();
 
-    /*IOTHUB_DEVICE_CLIENT_HANDLE client_handle = IoTHubDeviceClient_CreateFromConnectionString(
-        connection_string,
-        MQTT_Protocol
-    );*/
+    
     if (client_handle == nullptr) {
         LogError("Failed to create IoT Hub client handle");
         cleanup(client_handle);
