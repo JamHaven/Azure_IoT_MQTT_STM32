@@ -1,5 +1,9 @@
 # Adapted offical ARM Azure IoT example
 The file mbed_app.json was not included, but the template for it was left in the project directory for anyone to adapt.
+## Changes
+1. Added adapter/driver for the GP2Y1010AU0F dust sensor
+2. Added automatic measurment and transmittion of dust density to the IoT Hub
+3. Added two commonads, which allow the Cloud to let the device blink and change from automatic telemetry data transmission to manual
 
 ![](./resources/official_armmbed_example_badge.png)
 
