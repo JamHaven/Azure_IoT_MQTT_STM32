@@ -5,8 +5,6 @@ The file mbed_app.json was not included, but the template for it was left in the
 2. Added automatic measurment and transmittion of dust density to the IoT Hub
 3. Added two commonads, which allow the Cloud to let the device blink and change from automatic telemetry data transmission to manual
 
-![](./resources/official_armmbed_example_badge.png)
-
 # Azure IoT Hub example for Mbed OS
 
 The example project is part of the [Arm Mbed OS Official Examples](https://os.mbed.com/code/). It contains an application that uses the [Microsoft Azure SDK](https://github.com/Azure/azure-iot-sdk-c) to connect to an IoT Hub instance using the MQTT protocol.
