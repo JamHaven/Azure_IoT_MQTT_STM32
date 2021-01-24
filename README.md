@@ -1,4 +1,4 @@
-# Adapted offical ARM Azure IoT example
+# Adapted offical ARM Mbed Azure IoT example
 The file mbed_app.json was not included, but the template for it was left in the project directory for anyone to adapt.
 ## Changes
 1. Added adapter/driver for the GP2Y1010AU0F dust sensor
